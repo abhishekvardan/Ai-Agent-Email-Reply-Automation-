@@ -1,0 +1,212 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        -20
+      ],
+      "id": "c2f8da57-d26b-4ab6-9c8c-3d8e8605f01c",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 1,
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -20,
+        -20
+      ],
+      "id": "264135e7-8ac4-4013-84af-e10f1a4dbefc",
+      "name": "Gmail",
+      "webhookId": "9a0a1410-b130-42d3-8bd9-3d672855be41",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "S5Ru5ZN9cpz22Ljh",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a professional AI email assistant.\nYou will receive a snippet from an incoming Gmail message as:\nEmail Snippet: {{ $json.snippet }}\n\nYour task:\nWrite a clear, concise, and professional reply that is:\n\nPolite and context-aware,\n\nTailored to the sender's intent, and\n\nAppropriate in tone for a workplace or formal setting.\n\nIf the snippet includes a request, question, or concern, address it helpfully.\nIf the context is ambiguous, respond with a polite acknowledgment and a clarifying question.\nAvoid generic replies—make your message feel natural and human-written",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        460,
+        -20
+      ],
+      "id": "1c6060d2-ae88-418d-93bd-c0dfa8874dcd",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $json.id }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        220,
+        -20
+      ],
+      "id": "b6b46654-1d6a-4a3c-a846-b2ce6e65f2df",
+      "name": "Gmail1",
+      "webhookId": "d011776b-7c0c-450a-ac9d-4073aaecb8e4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "S5Ru5ZN9cpz22Ljh",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "llama3-70b-8192",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        440,
+        200
+      ],
+      "id": "f8511256-ea0f-4529-ae98-c47ab8cce208",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "Xr0diekNLu9SbdtI",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.snippet }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        600,
+        200
+      ],
+      "id": "02a537c0-a71f-49b0-b1de-8442643c1e16",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Gmail1').item.json.From }}",
+        "subject": "Reply from AI agent.",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        820,
+        -20
+      ],
+      "id": "2a795892-8c50-44ab-89eb-7e652f629777",
+      "name": "Gmail2",
+      "webhookId": "03e06356-6cee-42f2-8a7f-9cc84fdd3c89",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "S5Ru5ZN9cpz22Ljh",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Gmail2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "626e8093-237e-438f-9ea9-2a5e5bd44f33",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "165ec93cee1d3118017ed625f99530f68c36ef66c580d8306d07d547ed12d771"
+  },
+  "id": "1JT2xh1BObyWI4Qb",
+  "tags": []
+}
