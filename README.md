@@ -42,4 +42,10 @@ For fully autonomous operation, integrate a "Cron Node" at the commencement of y
 
 
 ### Input And Output Screens:
+ ### Email
+   ![Spotify Email Example](SpotifyEmail.png)
+ ### Automated Ai Agent Reply
+ 
+   ![AI Agent Automated Message](Ai_AgentAutomatedmessage.png)
+
 
