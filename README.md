@@ -39,3 +39,7 @@ The "AI-Responded" label plays a pivotal role in preventing redundant email repl
 ### Automating the Workflow:
 
 For fully autonomous operation, integrate a "Cron Node" at the commencement of your workflow in n8n. Configure this node to execute the workflow at regular intervals, such as every 5–10 minutes, to continuously monitor and process new incoming emails.
+
+
+### Input And Output Screens:
+
